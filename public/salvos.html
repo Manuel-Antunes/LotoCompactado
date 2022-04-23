@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./Css/myNav.css">
+    <link rel="stylesheet" href="./Css/salvos.css">
+    <title>Salvos</title>
+</head>
+
+<body>
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+    <script src="./Js/bdParser.js"></script>
+    <script src="./Js/salvos.js"></script>
+    <div class="container">
+        <div class="nav" id="nav">
+            <h2>
+                Lotofácil do Douglas Lokão
+            </h2>
+            <ul>
+                <li><a href="./home.html">Criar Jogo</a></li>
+                <li><a href="#">Jogos Salvos</a></li>
+                <li><a id="NomeConta" href="/">Entrar</a></li>
+            </ul>
+        </div>
+        <div class="menuLinks" id="menuLinks">
+
+        </div>
+        <div class="jogos" id="jogos">
+            <div id="carregando">
+                <h1>Carregando... <img src="../img/clud.jpg.jpg" alt="" width="100px" height="100px" style="border-radius: 100%;"></h1>
+
+            </div>
+            <script>
+                var meusJogos = [];
+                loaded = false;
+                var user;
+                firebase.auth().onAuthStateChanged(() => {
+                    if (firebase.auth().currentUser) {
+                        user = firebase.auth().currentUser.toJSON();
+                        let profile = document.createElement("img");
+                        profile.src = user.photoURL;
+                        profile.style.width = "50px";
+                        profile.style.height = "50px";
+                        profile.style.borderRadius = "100%";
+                        let newString = "";
+                        for (let i = 0; i < 30; i++) {
+                            if (user.displayName[i] != " ") {
+                                newString = newString + user.displayName[i];
+                            } else {
+                                break;
+                            }
+                        }
+                        document.getElementById("NomeConta").innerHTML = newString;
+                        document.getElementById("nav").appendChild(profile); {
+                            firebase.database().ref("usuarios/" + user.uid + "/jogos").on("value", function(snapshot) {
+                                try {
+                                    var x = Object.keys(snapshot.val()).length;
+                                } catch (erro) {
+                                    document.getElementById("carregando").getElementsByTagName("h1")[0].innerHTML = "Você não possui Jogos Salvos"
+                                    let zack = document.createElement("img");
+                                    zack.src = "../img/zack.jpg";
+                                    zack.style.width = "100px";
+                                    zack.style.height = "100px";
+                                    zack.style.borderRadius = "100%";
+                                    document.getElementById("carregando").getElementsByTagName("h1")[0].appendChild(zack);
+                                }
+                                //traz uma lista de jogos
+                                let vet = [];
+                                let num = 0;
+                                for (let l = 0; l < x; l++) {
+                                    firebase.database().ref("usuarios/" + user.uid + "/jogos/" + l).once("value").then(function(snapshot) {
+                                        let p = Object.keys(snapshot.val()).length;
+                                        //traz um jogo
+                                        for (let z = 0; z < p; z++) {
+                                            var ref = firebase.database().ref("usuarios/" + user.uid + "/jogos/" + l + "/" + z);
+                                            ref.on("value", function(snapshot) {
+                                                if (z != p - 1) {
+                                                    meusJogos.push(snapshot.val());
+                                                }
+                                                if (z == p - 1) {
+                                                    vet.push({
+                                                        ate: meusJogos.length,
+                                                        data: snapshot.val()
+                                                    })
+
+                                                }
+                                                if (l == x - 1 && z == p - 1) {
+                                                    for (let j = 0; j < meusJogos.length; j++) {
+                                                        let div = document.createElement("div");
+                                                        div.id = "buttons " + j;
+                                                        div.style.width = "200px";
+                                                        div.style.backgroundColor = "rgb(115, 115, 224)";
+                                                        div.style.padding = "10px";
+                                                        div.style.position = "relative";
+                                                        div.style.margin = "25px";
+                                                        div.style.borderRadius = "10px";
+                                                        div.style.textAlign = "center";
+                                                        div.style.color = "white";
+                                                        div.style.display = "inline-block"
+                                                        div.style.fontFamily = "Helverica";
+                                                        let jogoAtual = meusJogos[j];
+                                                        for (let i = 0; i < 25; i++) {
+                                                            document.getElementById("carregando").style.display = "none";
+                                                            let button = document.createElement("button");
+                                                            button.style.width = "40px";
+                                                            button.style.height = "40px";
+                                                            button.value = i + 1;
+                                                            button.innerHTML = i + 1;
+                                                            button.disabled;
+                                                            button.style.borderRadius = "100%";
+                                                            if (JSON.parse(jogoAtual).indexOf(i + 1) != -1) {
+                                                                button.style.backgroundColor = "red";
+                                                            }
+                                                            div.appendChild(button);
+                                                        }
+                                                        var has = document.createElement("p");
+                                                        let minhaData = "";
+                                                        let mayadata = "";
+                                                        let meuAte;
+                                                        let ateAnterior;
+                                                        let idLista;
+                                                        for (let u = 0; u < vet.length; u++) {
+                                                            if (u != 0) {
+                                                                if (j >= vet[u - 1].ate && j < vet[u].ate) {
+                                                                    mayadata = vet[u].data;
+                                                                    meuAte = vet[u].ate;
+                                                                    ateAnterior = vet[u - 1].ate;
+                                                                    has.innerHTML = "<b>Jogo: </b>" + (j + 1) + "<br>Efetuado em:" + mayadata;
+                                                                    idLista = u;
+                                                                }
+                                                            } else {
+                                                                if (j < vet[u].ate) {
+                                                                    minhaData = vet[u].data;
+                                                                    meuAte = vet[u].ate;
+                                                                    has.innerHTML = "<b>Jogo: </b>" + (j + 1) + "<br>Efetuado em:" + minhaData;
+                                                                    ateAnterior = 0;
+                                                                }
+                                                            }
+                                                        }
+                                                        div.appendChild(has);
+                                                        document.getElementById("jogos").appendChild(div);
+                                                        if (j == meuAte - 1) {
+                                                            let jogosDessaLista = [];
+                                                            for (let r = ateAnterior; r < meuAte; r++) {
+                                                                jogosDessaLista.push(meusJogos[r]);
+                                                            }
+
+                                                            let divisa = document.createElement("div");
+                                                            divisa.style.width = "200px";
+                                                            divisa.style.display = "block"
+                                                            divisa.id = meuAte;
+                                                            let tezitu = document.createElement("h1");
+                                                            tezitu.innerHTML = minhaData + mayadata;
+                                                            let deletebutton = document.createElement("img");
+                                                            deletebutton.src = "../img/delete.png"
+                                                            deletebutton.style.width = "20px";
+                                                            deletebutton.addEventListener("click", function(ev) {
+                                                                var jooj = jogoAtual;
+                                                                if (meusJogos.indexOf(jooj) != -1) {
+                                                                    document.getElementById("buttons " + j).style.display = "none";
+                                                                    meusJogos.splice(meusJogos.indexOf(jooj))
+                                                                } else alert("nao foi possivel remover");
+                                                            })
+                                                            let deletebuttonz = document.createElement("img");
+                                                            deletebuttonz.src = "../img/delete.png"
+                                                            deletebuttonz.style.width = "20px";
+                                                            deletebuttonz.addEventListener("click", function(ev) {
+                                                                let listi = jogosDessaLista;
+                                                                let divisaM = divisa;
+                                                                let viadage = ateAnterior;
+                                                                let viadage2 = meuAte;
+                                                                for (let ça = 0; ça < listi.length; ça++) {
+                                                                    if (meusJogos.indexOf(listi[ça]) != -1) {
+                                                                        document.getElementById("buttons " + (viadage + ça)).style.display = "none";
+                                                                        divisaM.style.display = "none";
+                                                                        meusJogos.splice(meusJogos.indexOf(listi[ça]), 1)
+                                                                        let listinhaTop = document.getElementsByName(viadage2);
+                                                                        for (let zu = 0; zu < 2; zu++) {
+                                                                            listinhaTop[zu].style.display = "none";
+                                                                        }
+                                                                        if (meusJogos.length == 0) {
+                                                                            document.getElementById("compare").style.display = "none";
+                                                                            document.getElementById("carregando").style.display = "block";
+                                                                            document.getElementById("carregando").getElementsByTagName("h1")[0].innerHTML = "Você não possui Jogos Salvos"
+                                                                            let zack = document.createElement("img");
+                                                                            zack.src = "../img/zack.jpg";
+                                                                            zack.style.width = "100px";
+                                                                            zack.style.height = "100px";
+                                                                            zack.style.borderRadius = "100%";
+                                                                            document.getElementById("carregando").getElementsByTagName("h1")[0].appendChild(zack);
+                                                                        }
+                                                                    } else alert("nao foi possivel remover");
+                                                                }
+
+                                                                if (!savador) {
+                                                                    var savador = document.createElement("button");
+                                                                    savador.style.height = "50px";
+                                                                    savador.style.backgroundColor = "rgb(110, 110, 236)";
+                                                                    savador.style.borderRadius = "10px";
+                                                                    savador.style.border = "none";
+                                                                    savador.style.fontFamily = "Arial, Helvetica, sans-serif";
+                                                                    savador.style.color = "cornsilk";
+                                                                    savador.innerHTML = "Salvar Alterações";
+                                                                    savador.addEventListener("click", function() {
+                                                                        var data = new Date();
+                                                                        alert("foi")
+                                                                            // Guarda cada pedaço em uma variável
+                                                                        var dia = data.getDate(); // 1-31
+                                                                        var dia_sem = data.getDay(); // 0-6 (zero=domingo)
+                                                                        var mes = data.getMonth(); // 0-11 (zero=janeiro)
+                                                                        var ano2 = data.getYear(); // 2 dígitos
+                                                                        var ano4 = data.getFullYear(); // 4 dígitos
+                                                                        var hora = data.getHours(); // 0-23
+                                                                        var min = data.getMinutes(); // 0-59
+                                                                        var seg = data.getSeconds(); // 0-59
+                                                                        var mseg = data.getMilliseconds(); // 0-999
+                                                                        var tz = data.getTimezoneOffset(); // em minutos
+                                                                        var dataGeral = "união de listas de: ";
+                                                                        dataGeral += dia;
+                                                                        dataGeral += " ";
+                                                                        dataGeral += "0";
+                                                                        dataGeral += (mes + 1);
+                                                                        dataGeral += " ";
+                                                                        dataGeral += (ano4);
+                                                                        dataGeral += " as ";
+                                                                        dataGeral += (hora);
+                                                                        dataGeral += " ";
+                                                                        dataGeral += (min);
+                                                                        dataGeral += " ";
+                                                                        dataGeral += (seg);
+
+                                                                        meusJogos.push(dataGeral);
+
+                                                                        firebase.database().ref("usuarios/" + user.uid + "/jogos").once("value").then(function(snapshot) {
+                                                                            var xe = 0;
+                                                                            try {
+                                                                                xe = Object.keys(snapshot.val()).length
+                                                                                firebase.database().ref("usuarios").child(user.uid).child("jogos").child("" + xe).set(meusJogos).then(() => {
+                                                                                    alert("jogo salvo com sucesso")
+                                                                                    window.location.href = '/salvar';
+                                                                                }).catch((erro) => {
+                                                                                    alert("Ocorreu um erro");
+                                                                                });
+                                                                            } catch (erro) {
+                                                                                firebase.database().ref("usuarios").child(user.uid).child("jogos").child("0").set(meusJogos).then(() => {
+                                                                                    alert("jogo salvo com sucesso")
+                                                                                    window.location.href = '/salvar';
+                                                                                }).catch((erro) => {
+                                                                                    alert("Ocorreu um erro");
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    })
+                                                                    savador.style.position = "fixed";
+                                                                    savador.style.right = "20px";
+                                                                    savador.style.top = "50%";
+                                                                    document.body.appendChild(savador);
+                                                                }
+
+                                                                console.log(meusJogos);
+                                                            })
+                                                            divisa.appendChild(tezitu);
+                                                            divisa.appendChild(deletebuttonz);
+                                                            let yu = document.createElement("a");
+                                                            yu.href = "#menuLinks";
+                                                            yu.innerHTML = "back to top";
+                                                            divisa.appendChild(yu);
+
+                                                            ////////////////////////////////////////////////////////////////////
+                                                            let divA = document.createElement("div");
+                                                            divA.id = "Bbuttons";
+                                                            divA.style.width = "700px";
+                                                            divA.style.borderRadius = "10px";
+                                                            let meusBotoes = [];
+                                                            for (let i = 0; i < 25; i++) {
+                                                                let button = document.createElement("button");
+                                                                button.style.width = "50px";
+                                                                button.style.height = "50px";
+                                                                button.value = i + 1;
+                                                                button.innerHTML = i + 1;
+                                                                button.onclick = function() {
+                                                                    if (resultado.indexOf(button.value) == -1 && resultado.length < 15 && button.style.backgroundColor != "rgb(114, 23, 79)") {
+
+                                                                        resultado.push(button.value);
+                                                                        console.log(button.value);
+                                                                        button.style.backgroundColor = "rgb(114, 23, 79)";
+
+                                                                    } else if (resultado.indexOf(button.value) != -1 && button.style.backgroundColor == "rgb(114, 23, 79)") {
+                                                                        resultado.splice(resultado.indexOf(button.value), 1);
+                                                                        button.style.backgroundColor = "";
+                                                                    } else {
+                                                                        alert("Para Fazer a Comparação digite os 15 numeros, caso esteja em outra lista cheque se alguma outra não ja foi preenchida")
+                                                                    }
+                                                                }
+                                                                divA.style.margin = "30px";
+                                                                button.style.borderRadius = "100%";
+                                                                meusBotoes.push(button);
+                                                                divA.appendChild(button);
+                                                            }
+
+                                                            let deletebuttonza = document.createElement("img");
+                                                            deletebuttonza.src = "../img/delete.png"
+                                                            deletebuttonza.style.width = "20px";
+                                                            deletebuttonza.style.marginLeft = "10px"
+                                                            deletebuttonza.style.marginTop = "20px";
+                                                            deletebuttonza.addEventListener("click", function(ev) {
+                                                                let meusBotoesAqui = meusBotoes;
+                                                                for (let hj = 0; hj < meusBotoesAqui.length; hj++) {
+                                                                    if (resultado.indexOf(meusBotoesAqui[hj].value) != -1) {
+                                                                        console.log(resultado);
+                                                                        resultado.splice(resultado.indexOf(meusBotoesAqui[hj].value), 1);
+                                                                        console.log(resultado);
+                                                                        meusBotoesAqui[hj].style.backgroundColor = "";
+                                                                    }
+                                                                }
+                                                            })
+                                                            divA.appendChild(deletebuttonza);
+                                                            let gerador = document.createElement("button");
+                                                            gerador.style.height = "50px";
+                                                            gerador.style.backgroundColor = "rgb(110, 110, 236)";
+                                                            gerador.style.borderRadius = "10px";
+                                                            gerador.style.border = "none";
+                                                            gerador.style.fontFamily = "Arial, Helvetica, sans-serif";
+                                                            gerador.style.color = "cornsilk";
+                                                            gerador.style.marginTop = "20px";
+                                                            gerador.style.marginLeft = "10px";
+
+                                                            gerador.innerHTML = "Gerar Valores";
+                                                            let subdiv = document.createElement("div");
+                                                            gerador.addEventListener("click", function(evt) {
+                                                                let minhaDiv = subdiv;
+                                                                let listaAquizinha = jogosDessaLista;
+                                                                let novaListaAquizinha = [];
+                                                                for (let q = 0; q < meusJogos.length; q++) {
+                                                                    for (let w = 0; w < listaAquizinha.length; w++) {
+                                                                        if (meusJogos[q] == listaAquizinha[w]) {
+                                                                            novaListaAquizinha.push(listaAquizinha[w]);
+                                                                        }
+                                                                    }
+                                                                }
+                                                                console.log(novaListaAquizinha);
+                                                                if (gerarTabela(novaListaAquizinha)) {
+                                                                    let clonavel = document.getElementById("tabelaAcerto");
+                                                                    let clone;
+                                                                    clone = clonavel.cloneNode(true);
+                                                                    document.getElementById("compare").style.display = "none";
+                                                                    minhaDiv.innerHTML = "";
+                                                                    minhaDiv.appendChild(clone);
+                                                                }
+                                                            })
+                                                            divA.style.border = "solid 1px black"
+                                                            divA.style.padding = "20px"
+                                                            divA.style.marginBottom = "200px"
+                                                            divA.appendChild(gerador);
+                                                            divA.appendChild(subdiv);
+                                                            divisa.appendChild(divA);
+                                                            /////////////////////////////////////////////////////////////////
+                                                            divisa.style.margin = "30px";
+                                                            document.getElementById("jogos").appendChild(document.createElement("br"));
+                                                            document.getElementById("jogos").appendChild(divisa)
+                                                            document.getElementById("jogos").appendChild(document.createElement("br"));
+                                                            let linku = document.createElement("a");
+                                                            linku.innerHTML = minhaData + mayadata;
+                                                            linku.href = "#buttons " + ateAnterior;
+                                                            linku.name = meuAte;
+                                                            let linku2 = document.createElement("a");
+                                                            linku2.className = "linku2";
+                                                            linku2.innerHTML = "     -   comparador";
+                                                            linku2.href = "#" + meuAte;
+                                                            linku2.name = meuAte;
+                                                            document.getElementById("menuLinks").appendChild(linku);
+                                                            document.getElementById("menuLinks").appendChild(linku2);
+
+                                                        }
+                                                        let deletebutton = document.createElement("img");
+                                                        deletebutton.src = "../img/delete.png"
+                                                        deletebutton.style.width = "20px";
+                                                        deletebutton.addEventListener("click", function(ev) {
+                                                            var jooj = jogoAtual;
+                                                            if (meusJogos.indexOf(jooj) != -1) {
+                                                                document.getElementById("buttons " + j).style.display = "none";
+                                                                meusJogos.splice(meusJogos.indexOf(jooj), 1)
+                                                                console.log(meusJogos);
+                                                                if (!savador) {
+                                                                    var savador = document.createElement("button");
+                                                                    savador.style.height = "50px";
+                                                                    savador.style.backgroundColor = "rgb(110, 110, 236)";
+                                                                    savador.style.borderRadius = "10px";
+                                                                    savador.style.border = "none";
+                                                                    savador.style.fontFamily = "Arial, Helvetica, sans-serif";
+                                                                    savador.style.color = "cornsilk";
+                                                                    savador.innerHTML = "Salvar Alterações";
+                                                                    savador.addEventListener("click", function() {
+                                                                        var data = new Date();
+                                                                        alert("foi")
+                                                                            // Guarda cada pedaço em uma variável
+                                                                        var dia = data.getDate(); // 1-31
+                                                                        var dia_sem = data.getDay(); // 0-6 (zero=domingo)
+                                                                        var mes = data.getMonth(); // 0-11 (zero=janeiro)
+                                                                        var ano2 = data.getYear(); // 2 dígitos
+                                                                        var ano4 = data.getFullYear(); // 4 dígitos
+                                                                        var hora = data.getHours(); // 0-23
+                                                                        var min = data.getMinutes(); // 0-59
+                                                                        var seg = data.getSeconds(); // 0-59
+                                                                        var mseg = data.getMilliseconds(); // 0-999
+                                                                        var tz = data.getTimezoneOffset(); // em minutos
+                                                                        var dataGeral = "união de listas de: ";
+                                                                        dataGeral += dia;
+                                                                        dataGeral += " ";
+                                                                        dataGeral += "0";
+                                                                        dataGeral += (mes + 1);
+                                                                        dataGeral += " ";
+                                                                        dataGeral += (ano4);
+                                                                        dataGeral += " as ";
+                                                                        dataGeral += novaHora();
+
+                                                                        meusJogos.push(dataGeral);
+
+                                                                        firebase.database().ref("usuarios/" + user.uid + "/jogos").once("value").then(function(snapshot) {
+                                                                            var xe = 0;
+                                                                            try {
+                                                                                xe = Object.keys(snapshot.val()).length
+                                                                                firebase.database().ref("usuarios").child(user.uid).child("jogos").child("" + xe).set(meusJogos).then(() => {
+                                                                                    alert("jogo salvo com sucesso")
+                                                                                    window.location.href = '/salvar';
+                                                                                }).catch((erro) => {
+                                                                                    alert("Ocorreu um erro");
+                                                                                });
+                                                                            } catch (erro) {
+                                                                                firebase.database().ref("usuarios").child(user.uid).child("jogos").child("0").set(meusJogos).then(() => {
+                                                                                    alert("jogo salvo com sucesso")
+                                                                                    window.location.href = '/salvar';
+                                                                                }).catch((erro) => {
+                                                                                    alert("Ocorreu um erro");
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    })
+                                                                    savador.style.position = "fixed";
+                                                                    savador.style.right = "20px";
+                                                                    savador.style.top = "50%";
+                                                                    document.body.appendChild(savador);
+                                                                }
+                                                            } else alert("nao foi possivel remover");
+                                                        })
+                                                        div.appendChild(deletebutton);
+                                                    }
+                                                    document.getElementById("compare").style.display = "block";
+                                                }
+                                            }, function(errorObject) {
+                                                alert("Deu Bosta Fi" + errorObject.code);
+                                                para = true;
+                                            })
+                                        }
+                                    })
+
+                                }
+
+                                loaded = true;
+                            }, function(errorObject) {
+                                alert("Deu Bosta Fi " + errorObject.code);
+                                para = true;
+                            })
+                        }
+                    } else {
+                        document.getElementById("carregando").getElementsByTagName("h1")[0].innerHTML = "Loga aew meu filho";
+                        alert("Voce precisa estar logado para acessar os serviços");
+                        var tada = document.createElement("img");
+                        tada.src = "../img/sephirot.jpg";
+                        tada.style.width = "100px";
+                        tada.style.height = "100px";
+                        tada.style.borderRadius = "100%";
+                        document.getElementById("carregando").getElementsByTagName("h1")[0].appendChild(tada);
+                    }
+                })
+            </script>
+
+            <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+
+        </div>
+        <div class="compare" id="compare" style="display: none;margin-top: 300px;">
+            <h1>
+                LISTA COMPARATÓRIA GERAL
+            </h1>
+            <br>
+            <h2>
+                Insira aqui o resultado do jogo :D
+            </h2>
+            <script>
+                let divA = document.createElement("div");
+                divA.id = "Bbuttons";
+                divA.style.width = "700px";
+                for (let i = 0; i < 25; i++) {
+                    let button = document.createElement("button");
+                    button.style.width = "50px";
+                    button.style.height = "50px";
+                    button.value = i + 1;
+                    button.innerHTML = i + 1;
+                    button.onclick = function() {
+                        if (resultado.indexOf(button.value) == -1 && resultado.length < 15 && button.style.backgroundColor != "rgb(114, 23, 79)") {
+                            resultado.push(button.value);
+                            button.style.backgroundColor = "rgb(114, 23, 79)";
+                        } else if (resultado.indexOf(button.value) != -1 && button.style.backgroundColor == "rgb(114, 23, 79)") {
+                            resultado.splice(resultado.indexOf(button.value), 1);
+                            button.style.backgroundColor = "";
+                        } else {
+                            alert("Para Fazer a Comparação digite os 15 numeros")
+                        }
+                        console.log(resultado.length);
+                    }
+                    divA.style.margin = "30px";
+                    button.style.borderRadius = "100%";
+                    divA.appendChild(button);
+                }
+                document.getElementById("compare").appendChild(divA);
+            </script>
+            <button style="height: 50px; background-color: rgb(110, 110, 236); border-radius: 10px; border: none; font-family: Arial, Helvetica, sans-serif; color: cornsilk; margin-left: 50px;" onclick="gerarTabela(meusJogos)">Gerar Valores</button>
+            <div class="tabelaAcerto" id="tabelaAcerto" style="margin-right: 200px; margin-top: 100px;">
+                <img id="mascara" style="width: 100%; padding-bottom: 320px; position: absolute; background-color: rgba(253, 254, 255, 0.973); filter: blur(2px);">
+                <div id="a" style="position: absolute; font-family: Arial, Helvetica, sans-serif;">Gere a aposta para exibir a tabela</div>
+                <table style="width:100%" id="table">
+                    <tr>
+                        <th>Acerto</th>
+                        <th>Quantidade</th>
+                        <th>Prêmio</th>
+                    </tr>
+                    <tr>
+                        <td>11 Pontos</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>12 Pontos</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>13 Pontos</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>14 Pontos</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>15 Pontos</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>Total</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+
+
+
+</div>
+
+</html>

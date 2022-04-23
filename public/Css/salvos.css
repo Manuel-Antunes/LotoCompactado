@@ -1,0 +1,42 @@
+.jogos {
+    margin: 20px;
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+    display: inline;
+}
+
+.jogos button:focus {
+    outline: none;
+}
+
+.tabelaAcerto {
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    margin: 20px;
+    border: solid black;
+    border-radius: 10px;
+    float: left;
+}
+
+.tabelaAcerto th,
+td {
+    border: 1px solid black;
+    height: 40px;
+}
+
+.compare {
+    float: left;
+    margin: 20px;
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+}
+
+.compare button:focus {
+    outline: none;
+}
+
+.menuLinks a.linku2 {
+    margin-right: 30px;
+}

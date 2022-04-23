@@ -1,0 +1,71 @@
+<html>
+
+<head>
+    <title>Lotofacil-Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css">
+    <link rel="stylesheet" href="./Css/login.css">
+</head>
+
+<body>
+    <h1>Cadastrar Usuário</h1>
+    <div class="col-md-4">
+        <h3 class="text-center" id="displayName"></h3>
+        <br>
+        <form>
+            <div class="form-group" id="imgGroup">
+                <label for="imgInput">Perfil</label>
+                <input type="file" id="imgInput" placeholder="Perfil" accept="image/*" onchange="imagemdolado()">
+            </div>
+            <div class="form-group">
+                <label for="emailInput">E-mail</label>
+                <input type="email" class="form-control" id="emailInput" placeholder="E-mail">
+            </div>
+            <div class="form-group">
+                <label for="passwordInput">Senha</label>
+                <input type="password" class="form-control" id="passwordInput" placeholder="Senha">
+            </div>
+            <div class="form-group">
+                <label for="usernameInput">Nome</label>
+
+                <input type="text" class="form-control" id="usernameInput" placeholder="Nome de usuário">
+            </div>
+        </form>
+
+        <button class="btn btn-lg btn-block btn-info" id="createUserButton">Criar Nova Conta</button>
+
+        <p class="text-center">
+            <button class="btn btn-lg btn-block btn-default" id="logOutButton">Sair</button>
+        </p>
+    </div>
+
+    <br><br>
+    <a class="button button-clear" href="/home">Voltar para Home</a>
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+    <script src="./Js/bdParser.js"></script>
+    <script src="./Js/creation.js"></script>
+
+
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Active</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+        </li>
+    </ul>
+</body>
+
+</html>

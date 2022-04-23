@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./Css/myNav.css">
+    <link rel="stylesheet" href="./Css/index.css">
+    <title>Lotofácil do Douglas Lokão</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+    <script src="./Js/bdParser.js"></script>
+    <!-- <script src="../app.js"></script> -->
+    <div class="container">
+        <div class="nav" id="nav">
+            <h2>
+                Lotofácil do Douglas Lokão
+            </h2>
+            <ul>
+                <li><a href="#">Criar Jogo</a></li>
+                <li><a href="#" onclick="(e)=>{
+                        e.preventDefault();
+                        var myInit = { method: 'GET'};
+                        fetch('http://localhost:3333',myInit)
+                        .then(function(response) {
+                        return response.blob();
+                        alert('asd')
+                        })
+                        .then(function(myBlob) {
+                        alert('asd')
+                        });
+                    }">Jogos Salvos</a></li>
+                <li><a id="NomeConta" href="/">Entrar</a></li>
+            </ul>
+        </div>
+        <div class="play" id="play">
+            <h2>Criar Jogo</h2>
+            <p onload="">Escolha 5 números que devem ser <b>excluidos</b> de suas apostas</p>
+            <script>
+                let div = document.createElement("div");
+                div.id = "buttons";
+                div.style.width = "450px";
+                for (let i = 0; i < 25; i++) {
+                    let button = document.createElement("button");
+                    button.style.width = "50px";
+                    button.style.height = "50px";
+                    button.value = i + 1;
+                    button.innerHTML = i + 1;
+                    button.onclick = function() {
+                        if (selectedNumbers.indexOf(button.value) == -1 && selectedNumbers.length < 5) {
+                            selectedNumbers.push(button.value);
+                            button.style.backgroundColor = "rgb(148, 34, 34)";
+                        } else if (selectedNumbers.indexOf(button.value) != -1) {
+                            selectedNumbers.splice(selectedNumbers.indexOf(button.value), 1);
+                            button.style.backgroundColor = "";
+                        } else {
+                            alert("O maximo de números digitaveis é 5")
+                        }
+                        console.log(selectedNumbers.length);
+                    }
+                    div.style.margin = "30px";
+                    button.style.borderRadius = "100%";
+                    div.appendChild(button);
+                }
+                document.getElementById("play").appendChild(div);
+            </script>
+            <button onclick="generateTable()" style="height: 50px; background-color: rgb(110, 110, 236); border-radius: 10px; border: none; font-family: Arial, Helvetica, sans-serif; color: cornsilk; margin-left: 50px;">Gerar apostas</button>
+            <input max="15503" min="0" placeholder="Insira o numero de Jogos" type="number" name="numeroDeJogos" id="numeroDeJogos" style="height: 45px; border-radius: 10px;">
+            <button onclick="salvarJogos()" style="height: 50px; background-color: rgb(110, 110, 236); border-radius: 10px; border: none; font-family: Arial, Helvetica, sans-serif; color: cornsilk; margin-left: 50px;">Salvar Jogos</button>
+        </div>
+        <div class="tabelaAcerto" id="tabelaAcerto">
+
+            <img id="mascara" style="width: 500px; padding-bottom: 320px; position: absolute; background-color: rgba(253, 254, 255, 0.973); filter: blur(2px);">
+            <div id="a" style="position: absolute; font-family: Arial, Helvetica, sans-serif;">Gere a aposta para exibir a tabela</div>
+            <table style="width:100%" id="table">
+                <tr>
+                    <th>Acerto</th>
+                    <th>Quantidade</th>
+                    <th>Prêmio</th>
+                </tr>
+                <tr>
+                    <td>11 Pontos</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>12 Pontos</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>13 Pontos</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>14 Pontos</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>15 Pontos</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </table>
+
+        </div>
+        <div class="compare" id="compare">
+            <h1>
+                LISTA COMPARATÓRIA
+            </h1>
+            <br>
+            <h2>
+                Insira aqui o resultado do jogo :D
+            </h2>
+            <script>
+                let divA = document.createElement("div");
+                divA.id = "Bbuttons";
+                divA.style.width = "700px";
+                for (let i = 0; i < 25; i++) {
+                    let button = document.createElement("button");
+                    button.style.width = "50px";
+                    button.style.height = "50px";
+                    button.value = i + 1;
+                    button.innerHTML = i + 1;
+                    button.onclick = function() {
+                        if (resultado.indexOf(button.value) == -1 && resultado.length < 15) {
+                            resultado.push(button.value);
+                            button.style.backgroundColor = "rgb(114, 23, 79)";
+                        } else if (resultado.indexOf(button.value) != -1) {
+                            resultado.splice(resultado.indexOf(button.value), 1);
+                            button.style.backgroundColor = "";
+                        } else {
+                            alert("O maximo de números digitaveis é 15")
+                        }
+                        console.log(resultado.length);
+                    }
+                    div.style.margin = "30px";
+                    button.style.borderRadius = "100%";
+                    divA.appendChild(button);
+                }
+                document.getElementById("compare").appendChild(divA);
+            </script>
+
+        </div>
+    </div>
+
+    <script src="../Js/index.js"></script>
+</body>
+
+</html>
